@@ -31,6 +31,9 @@ char *responseFromServer[2048];
 int connectStatusServer;
 int sendStatusServer;
 int sizeOfResponseFromServer;
+char pathOfBlocked[1024] = "/~carey/CPSC441/ass1/error.html";
+char hostOfBlocked[1024] = "136.159.2.17";
+char* blockedWords[3] = {"floppy","spongebob","Curling"};
 
 // Function Declarations
 // ---------------------
@@ -55,6 +58,11 @@ void buildSuccess(int programPos);
 void parseHTTP();
 /*
 * Function Parses GET REQUEST from Web browser to use for Web Server
+*/
+
+int checkForBlocked();
+/*
+* Will return -1 if blocked string exists, else will return 1
 */
 
 int main(int argc, char *argv[])
@@ -85,6 +93,10 @@ int main(int argc, char *argv[])
         serverComms.sin_addr.s_addr = inet_addr(IPbuffer);
         serverComms.sin_family = AF_INET;
         serverComms.sin_port = htons(httpPort);
+        if(checkForBlocked() == -1) {
+            sprintf(getRequest, "GET %s HTTP/1.1\r\nHost: %s\r\n\r\n", pathOfBlocked, hostOfBlocked);
+            puts("Request is BLOCKED, redirecting to\n");
+        }
         if ((clientToServer = socket(AF_INET, SOCK_STREAM, 0)) == -1 ||
             (connectStatusServer = connect(clientToServer, (struct sockaddr *)&serverComms, sizeof(serverComms)) == -1) ||
             ((sendStatusServer = send(clientToServer, getRequest, strlen(getRequest), 0))) == -1)
@@ -183,4 +195,26 @@ void parseHTTP()
     host_entry = gethostbyname(browserReqHost);
     IPbuffer = inet_ntoa(*((struct in_addr *)host_entry->h_addr_list[0]));
     sprintf(getRequest, "GET %s HTTP/1.1\r\nHost: %s\r\n\r\n", browserReqPath, IPbuffer);
+}
+
+int checkForBlocked() {
+
+    for(int i = 0;i<3;i++) {
+        char *temp = blockedWords[i];
+        int lengthOfWord = strlen(temp);
+        int tempPos = 0;
+        for(int j = 0; j<strlen(browserReqPath);j++) {
+            if(tolower(browserReqPath[j]) == tolower(temp[tempPos])) {
+                while(tolower(browserReqPath[j]) == tolower(temp[tempPos])) {
+                    tempPos++;
+                    j++;
+                    if(tempPos == lengthOfWord) {
+                        return -1;
+                    }
+                }
+            }
+        }
+
+    }
+    return 1;
 }
