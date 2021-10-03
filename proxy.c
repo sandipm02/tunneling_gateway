@@ -95,7 +95,7 @@ int main(int argc, char *argv[])
         serverComms.sin_port = htons(httpPort);
         if(checkForBlocked() == -1) {
             sprintf(getRequest, "GET %s HTTP/1.1\r\nHost: %s\r\n\r\n", pathOfBlocked, hostOfBlocked);
-            puts("Request is BLOCKED, redirecting to\n");
+            puts("Request is BLOCKED, redirecting error page\n");
         }
         if ((clientToServer = socket(AF_INET, SOCK_STREAM, 0)) == -1 ||
             (connectStatusServer = connect(clientToServer, (struct sockaddr *)&serverComms, sizeof(serverComms)) == -1) ||
