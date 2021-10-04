@@ -33,7 +33,7 @@ int sendStatusServer;
 int sizeOfResponseFromServer;
 char pathOfBlocked[1024] = "/~carey/CPSC441/ass1/error.html";
 char hostOfBlocked[1024] = "136.159.2.17";
-char* blockedWords[3] = {"floppy","spongebob","Curling"};
+char* blockedWords[3] = {"invalid","spongebob","Curling"};
 
 // Function Declarations
 // ---------------------
@@ -195,6 +195,7 @@ void parseHTTP()
     host_entry = gethostbyname(browserReqHost);
     IPbuffer = inet_ntoa(*((struct in_addr *)host_entry->h_addr_list[0]));
     sprintf(getRequest, "GET %s HTTP/1.1\r\nHost: %s\r\n\r\n", browserReqPath, IPbuffer);
+    puts(getRequest);
 }
 
 int checkForBlocked() {
