@@ -10,7 +10,6 @@
 #include <arpa/inet.h>
 
 // Global Var Declaration
-// ---------------------
 const int httpPort = 80;
 int port;
 int serverSocket;
